@@ -1,21 +1,13 @@
 function diffArray(firstArray, secondArray) {
-  const firstUnique = firstArray.reduce((acc, el) => {
-    if (secondArray.indexOf(el) === -1) {
-      return [...acc, el];
-    }
-    return acc;
-  }, []);
+	const unique = [];
+	const combined = [ ...firstArray, ...secondArray ];
 
-  const secondUnique = secondArray.reduce((acc, el) => {z
-    if (firstArray.indexOf(el) === -1) {
-      return [...acc, el];
-    }
-    return acc;
-  }, []);
-
-  return firstUnique.concat(secondUnique);
+	for (let element of combined) {
+		let inFirstArray = firstArray.indexOf(element);
+		let inSecondArray = secondArray.indexOf(element);
+		if (inFirstArray < 0 || inSecondArray < 0) unique.push(element);
+	}
+	return unique;
 }
 
-export {
-  diffArray,
-};
+export { diffArray };
