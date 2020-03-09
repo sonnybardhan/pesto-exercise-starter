@@ -1,5 +1,5 @@
 const animalSort = (animals) => {
-	animals.sort((prevAnimal, nextAnimal) => {
+	return animals.sort((prevAnimal, nextAnimal) => {
 		if (prevAnimal.numberOfLegs < nextAnimal.numberOfLegs) return -1;
 		if (prevAnimal.numberOfLegs > nextAnimal.numberOfLegs) return 1;
 		else {
@@ -7,7 +7,6 @@ const animalSort = (animals) => {
 			if (prevAnimal.name > nextAnimal.name) return 1;
 		}
 	});
-	return animals;
 };
 
 export { animalSort };
