@@ -1,3 +1,11 @@
-import { leastCommonMultiple } from "./leastCommonMultiple";
+import { leastCommonMultiple } from './leastCommonMultiple';
 
-describe("leastCommonMultiple", () => {});
+describe('leastCommonMultiple', () => {});
+
+//matchers
+
+//toBeNull
+//toBeUndefined
+//toBeDefined
+//.toBeTruthy
+//.toBeFalsy
