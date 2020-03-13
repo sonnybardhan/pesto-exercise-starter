@@ -31,6 +31,21 @@ describe('parseMs', () => {
 		expect(result).toEqual(expectedResult);
 	});
 
+	it('should return correct values for decimal inputs', () => {
+		const expectedResult = {
+			days: 0,
+			hours: 0,
+			minutes: 0,
+			seconds: 0,
+			milliseconds: 0,
+			microseconds: 123,
+			nanoseconds: 123
+		};
+		const result = parseMs(0.12312334);
+
+		expect(result).toEqual(expectedResult);
+	});
+
 	it('should return an error message for invalid inputs', () => {
 		const result = parseMs('pants');
 		expect(result).toBe('Invalid input, expected a time in milliseconds in the form of a "number"');
