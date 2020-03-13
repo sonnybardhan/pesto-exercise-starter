@@ -1,4 +1,6 @@
 const parseMs = (ms) => {
+	if (!isFinite(ms)) return 'Invalid input, expected a time in milliseconds in the form of a "number"';
+
 	const time = {
 		days: 0,
 		hours: 0,

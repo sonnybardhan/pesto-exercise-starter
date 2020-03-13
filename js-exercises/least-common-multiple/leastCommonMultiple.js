@@ -2,6 +2,8 @@ function leastCommonMultiple(...args) {
 	const num1 = args[0];
 	const num2 = args[1];
 
+	if (!isFinite(num1) || !isFinite(num2)) return 'Invalid input/s, expected 2 numbers.';
+	if (num1 === 0 || num2 === 0) return 'LCM of zero does not exist';
 	if (isDivisor(num1, num2)) return num1;
 	if (isDivisor(num2, num1)) return num2;
 
