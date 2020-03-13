@@ -24,7 +24,7 @@ const parseMs = (ms) => {
 	let timeRemaining = ms;
 	let i = 0;
 
-	while (timeRemaining) {
+	while (timeRemaining > 0.000001) {
 		const unit = Object.keys(unitsOfTime)[i];
 		const value = Object.values(unitsOfTime)[i];
 
