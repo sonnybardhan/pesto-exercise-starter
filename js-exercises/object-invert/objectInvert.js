@@ -7,11 +7,15 @@ function objectInvert(obj) {
 
 function populateObj(newKeys, newValues) {
 	const obj = {};
-	for (let i = 0; i < newKeys.length; i++) {
-		const key = newKeys[i];
-		const value = newValues[i];
-		obj[key] = value;
-	}
+	// for (let i = 0; i < newKeys.length; i++) {
+	// 	const key = newKeys[i];
+	// 	const value = newValues[i];
+	// 	obj[key] = value;
+	// }
+
+	newKeys.forEach((element, index) => {
+		obj[element] = newValues[index];
+	});
 	return obj;
 }
 
