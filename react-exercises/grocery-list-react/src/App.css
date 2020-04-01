@@ -1,0 +1,8 @@
+body {
+	display: flex;
+}
+
+#clearBtn {
+	background: red;
+	color: white;
+}
