@@ -4,7 +4,7 @@
 
 Game URL: _____
 
-Mockup URL: _____
+Mockup URL: https://drive.google.com/file/d/1CTq1lX3mpT7Hrvr-6uatCXmmmkutL4qn/view?usp=sharing
 
 ## How to do the question
 - Make a new branch `snake-game`.
