@@ -4,6 +4,7 @@ import Food from './Food';
 import GridBlock from './GridBlock';
 
 export default function() {
+	let score = 0;
 	const [ direction, setDirection ] = useState('right');
 	const [ grid, setGrid ] = useState(initializeMap());
 	const [ snake, setSnake ] = useState([ { x: 3, y: 3 }, { x: 3, y: 2 }, { x: 3, y: 1 } ]);
@@ -14,7 +15,7 @@ export default function() {
 
 	document.addEventListener('keydown', (e) => onInput(e, setDirection));
 
-	// console.log('direction is: ', direction);
+	console.log('direction is: ', direction);
 
 	function moveSnake() {
 		//snake, food, func
@@ -39,7 +40,15 @@ export default function() {
 				break;
 		}
 		const newSnake = [ newHead, ...snake ];
-		newSnake.pop(); //depending on whether or not it encountered food
+
+		if (!proceed(newHead, snake, outOfBounds, collidedWithSelf)) alert('game over!');
+
+		if (ateFood(newHead, food)) {
+			score += 1;
+			setFood(repositionFood());
+		} else {
+			newSnake.pop(); //depending on whether or not it encountered food
+		}
 
 		setSnake(newSnake);
 		setGrid(initializeMap());
@@ -47,11 +56,10 @@ export default function() {
 		placeFood(grid, food);
 	}
 
-	useInterval(moveSnake, 300);
+	useInterval(moveSnake, 200);
 
 	function useInterval(callback, delay) {
 		const savedCallback = useRef();
-
 		// Remember the latest callback.
 		useEffect(
 			() => {
@@ -59,7 +67,6 @@ export default function() {
 			},
 			[ callback ]
 		);
-
 		// Set up the interval.
 		useEffect(
 			() => {
@@ -122,4 +129,25 @@ function onInput({ keyCode }, func) {
 		default:
 			break;
 	}
+}
+
+function outOfBounds(x, y) {
+	if (x < 0 || x > 15 || y < 0 || y > 15) return true;
+	return false;
+}
+
+function collidedWithSelf(x, y, snake) {
+	snake.forEach((segment) => {
+		if (segment.x === x && segment.y === y) return true;
+	});
+	return false;
+}
+
+function proceed({ x, y }, snake, func1, func2) {
+	return !func1(x, y) && !func2(x, y, snake);
+}
+
+function ateFood({ x, y }, food) {
+	if (x === food.x && y === food.y) return true;
+	return false;
 }
