@@ -4,7 +4,7 @@ import Food from './Food';
 import GridBlock from './GridBlock';
 
 export default function() {
-	let score = 0;
+	const [ score, setScore ] = useState(0);
 	const [ direction, setDirection ] = useState('right');
 	const [ grid, setGrid ] = useState(initializeMap());
 	const [ snake, setSnake ] = useState([ { x: 3, y: 3 }, { x: 3, y: 2 }, { x: 3, y: 1 } ]);
@@ -13,38 +13,28 @@ export default function() {
 	placeFood(grid, food);
 	placeSnake(grid, snake);
 
-	document.addEventListener('keydown', (e) => onInput(e, setDirection));
+	document.addEventListener('keydown', (e) => onInput(e, direction, setDirection));
 
-	console.log('direction is: ', direction);
+	function gameOver() {
+		setScore(0);
+		setFood(repositionFood());
+		setSnake([ { x: 3, y: 3 }, { x: 3, y: 2 }, { x: 3, y: 1 } ]);
+		setGrid(initializeMap());
+		placeSnake(grid, snake);
+		placeFood(grid, food);
+	}
 
-	function moveSnake() {
-		//snake, food, func
-		console.log('called');
-		const newHead = {};
-		switch (direction) {
-			case 'right':
-				newHead.x = snake[0].x;
-				newHead.y = snake[0].y + 1;
-				break;
-			case 'left':
-				newHead.x = snake[0].x;
-				newHead.y = snake[0].y - 1;
-				break;
-			case 'up':
-				newHead.x = snake[0].x - 1;
-				newHead.y = snake[0].y;
-				break;
-			case 'down':
-				newHead.x = snake[0].x + 1;
-				newHead.y = snake[0].y;
-				break;
-		}
+	function repositionSnake() {
+		const newHead = newPosition(direction, snake);
 		const newSnake = [ newHead, ...snake ];
 
-		if (!proceed(newHead, snake, outOfBounds, collidedWithSelf)) alert('game over!');
+		if (!proceed(newHead, snake, outOfBounds, collidedWithSelf)) {
+			alert('game over! ', score);
+			gameOver();
+		}
 
 		if (ateFood(newHead, food)) {
-			score += 1;
+			setScore(score + 5);
 			setFood(repositionFood());
 		} else {
 			newSnake.pop(); //depending on whether or not it encountered food
@@ -56,7 +46,7 @@ export default function() {
 		placeFood(grid, food);
 	}
 
-	useInterval(moveSnake, 200);
+	useInterval(repositionSnake, 200);
 
 	function useInterval(callback, delay) {
 		const savedCallback = useRef();
@@ -82,9 +72,12 @@ export default function() {
 		);
 	}
 
-	const gameMap = grid.map((item) => item);
-
-	return <div className="main-map">{gameMap}</div>;
+	return (
+		<div className="">
+			<p>Score: {score}</p>
+			<div className="main-map">{grid}</div>;
+		</div>
+	);
 }
 
 //utility functions
@@ -116,16 +109,16 @@ function initializeMap() {
 	return grid;
 }
 
-function onInput({ keyCode }, func) {
+function onInput({ keyCode }, direction, func) {
 	switch (keyCode) {
 		case 37: //left
-			return func('left');
+			if (direction !== 'right') return func('left');
 		case 38: //up
-			return func('up');
+			if (direction !== 'down') return func('up');
 		case 39: //right
-			return func('right');
+			if (direction !== 'left') return func('right');
 		case 40: //down
-			return func('down');
+			if (direction !== 'up') return func('down');
 		default:
 			break;
 	}
@@ -150,4 +143,27 @@ function proceed({ x, y }, snake, func1, func2) {
 function ateFood({ x, y }, food) {
 	if (x === food.x && y === food.y) return true;
 	return false;
+}
+
+function newPosition(direction, snake) {
+	const newHead = {};
+	switch (direction) {
+		case 'right':
+			newHead.x = snake[0].x;
+			newHead.y = snake[0].y + 1;
+			break;
+		case 'left':
+			newHead.x = snake[0].x;
+			newHead.y = snake[0].y - 1;
+			break;
+		case 'up':
+			newHead.x = snake[0].x - 1;
+			newHead.y = snake[0].y;
+			break;
+		case 'down':
+			newHead.x = snake[0].x + 1;
+			newHead.y = snake[0].y;
+			break;
+	}
+	return newHead;
 }
