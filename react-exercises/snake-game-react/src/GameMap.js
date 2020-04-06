@@ -9,6 +9,7 @@ export default function() {
 	const [ grid, setGrid ] = useState(initializeMap());
 	const [ snake, setSnake ] = useState([ { x: 3, y: 3 }, { x: 3, y: 2 }, { x: 3, y: 1 } ]);
 	const [ food, setFood ] = useState(repositionFood());
+	const [ time, setTime ] = useState(270);
 
 	placeFood(grid, food);
 	placeSnake(grid, snake);
@@ -36,6 +37,8 @@ export default function() {
 		if (ateFood(newHead, food)) {
 			setScore(score + 5);
 			setFood(repositionFood());
+			setTime(time - 10);
+			console.log(time);
 		} else {
 			newSnake.pop(); //depending on whether or not it encountered food
 		}
@@ -46,7 +49,7 @@ export default function() {
 		placeFood(grid, food);
 	}
 
-	useInterval(repositionSnake, 200);
+	useInterval(repositionSnake, time);
 
 	function useInterval(callback, delay) {
 		const savedCallback = useRef();
