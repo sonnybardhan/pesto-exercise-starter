@@ -37,8 +37,12 @@ export default function() {
 		if (ateFood(newHead, food)) {
 			setScore(score + 5);
 			setFood(repositionFood());
-			setTime(time - 10);
-			console.log(time);
+			setTime((t) => {
+				if (time > 90) {
+					return time - 10;
+				}
+				return time;
+			});
 		} else {
 			newSnake.pop(); //depending on whether or not it encountered food
 		}
