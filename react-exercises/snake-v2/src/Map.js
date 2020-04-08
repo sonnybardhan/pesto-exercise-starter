@@ -14,6 +14,7 @@ const Map = () => {
 	const [ timeInterval, setTimeInterval ] = useState(150);
 	const [ gameRunning, setGameRunning ] = useState(false);
 	const [ bestScore, setBestScore ] = useState(getScoreFromLS(key));
+	const [ message, setMessage ] = useState('');
 
 	useEffect(
 		() => {
@@ -85,11 +86,13 @@ const Map = () => {
 		if (outOfBounds(newHead)) {
 			console.log('Out of bounds');
 			saveBestScore();
+			setMessage(`Oops! Game over! Your last score was ${score}`);
 			return gameReset();
 		}
 
 		if (selfCollision(newHead)) {
 			console.log('Self collision!');
+			setMessage(`Oops! Game over! Your last score was ${score}`);
 			saveBestScore();
 			return gameReset();
 		}
@@ -144,7 +147,16 @@ const Map = () => {
 			<h2>
 				<span>Score: {score}</span>
 			</h2>
-			<div className="main-map">{gameRunning ? displayMap : <h2>PRESS SPACEBAR TO BEGIN</h2>}</div>
+			<div className="main-map">
+				{gameRunning ? (
+					displayMap
+				) : (
+					<div>
+						<h3 style={{ textAlign: 'center' }}>{message ? message : null}</h3>
+						<h2 style={{ textAlign: 'center' }}>PRESS SPACEBAR TO BEGIN</h2>
+					</div>
+				)}
+			</div>
 			<h2 style={{ textAlign: 'right' }}>
 				<span>Best: {bestScore ? `${bestScore}` : 0}</span>
 			</h2>

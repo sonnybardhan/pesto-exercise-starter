@@ -2,7 +2,7 @@
 	box-sizing: border-box;
 } */
 body {
-	/* background: rgba(255, 233, 233, 0.521); */
+	background: rgba(255, 233, 233, 0.521);
 	height: 95vh;
 	justify-content: center;
 	display: flex;
