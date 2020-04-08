@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 
 const Map = () => {
 	const initialRows = init();
-	const initialSnake = [ { x: 0, y: 2 }, { x: 0, y: 1 }, { x: 0, y: 0 } ];
+	const initialSnake = [ { x: 3, y: 3 }, { x: 3, y: 2 }, { x: 3, y: 1 } ];
 	const initialDirection = 'right';
 	const key = 'snakeGame';
 
@@ -15,6 +15,7 @@ const Map = () => {
 	const [ gameRunning, setGameRunning ] = useState(false);
 	const [ bestScore, setBestScore ] = useState(getScoreFromLS(key));
 	const [ message, setMessage ] = useState('');
+	const [ started, setStarted ] = useState(false);
 
 	useEffect(
 		() => {
@@ -25,45 +26,38 @@ const Map = () => {
 		[ bestScore ]
 	);
 
+	useEffect(
+		() => {
+			document.addEventListener('keydown', keyboardInput);
+			return () => {
+				document.removeEventListener('keydown', keyboardInput);
+			};
+		},
+		[ direction ]
+	);
+
+	// const keyboardInput = ({ keyCode }, setGameRunning, setDirection) => {
 	const keyboardInput = ({ keyCode }) => {
 		switch (keyCode) {
 			case 32:
-				setGameRunning(true);
-				break;
+				return setGameRunning((prevState) => {
+					if (!started) {
+						setStarted(true);
+					}
+					return !prevState;
+				});
 			case 37:
-				if (direction === 'right') {
-					break;
-				} else {
-					setDirection('left');
-					break;
-				}
+				if (direction !== 'right') return setDirection('left');
 			case 38:
-				if (direction === 'down') {
-					break;
-				} else {
-					setDirection('up');
-					break;
-				}
+				if (direction !== 'down') return setDirection('up');
 			case 39:
-				if (direction === 'left') {
-					break;
-				} else {
-					setDirection('right');
-					break;
-				}
+				if (direction !== 'left') return setDirection('right');
 			case 40:
-				if (direction === 'up') {
-					break;
-				} else {
-					setDirection('down');
-					break;
-				}
+				if (direction !== 'up') return setDirection('down');
 			default:
 				break;
 		}
 	};
-
-	document.addEventListener('keydown', keyboardInput);
 
 	const placeSnake = () => {
 		const newRows = initialRows;
@@ -85,14 +79,16 @@ const Map = () => {
 
 		if (outOfBounds(newHead)) {
 			console.log('Out of bounds');
+			setStarted(false);
 			saveBestScore();
-			setMessage(`Oops! Game over! Your last score was ${score}`);
+			setMessage(score);
 			return gameReset();
 		}
 
 		if (selfCollision(newHead)) {
 			console.log('Self collision!');
-			setMessage(`Oops! Game over! Your last score was ${score}`);
+			setStarted(false);
+			setMessage(score);
 			saveBestScore();
 			return gameReset();
 		}
@@ -137,10 +133,6 @@ const Map = () => {
 		setGameRunning(false);
 	}
 
-	function playPause() {
-		setGameRunning(!gameRunning);
-	}
-
 	return (
 		<div className="">
 			<h1 style={{ textAlign: 'center' }}>Snake!</h1>
@@ -152,8 +144,9 @@ const Map = () => {
 					displayMap
 				) : (
 					<div>
-						<h3 style={{ textAlign: 'center' }}>{message ? message : null}</h3>
-						<h2 style={{ textAlign: 'center' }}>PRESS SPACEBAR TO BEGIN</h2>
+						<h1 style={{ textAlign: 'center', fontWeight: 'bold' }}>{message ? 'Game over!' : null}</h1>
+						<h2 style={{ textAlign: 'center' }}>{message ? `You scored ${message}` : null}</h2>
+						<h2 style={{ textAlign: 'center' }}>PRESS SPACEBAR TO {started ? 'RESUME' : 'PLAY'}</h2>
 					</div>
 				)}
 			</div>
@@ -248,6 +241,7 @@ function useInterval(callback, delay, gameRunning) {
 			function tick() {
 				savedCallback.current();
 			}
+
 			if (delay !== null && gameRunning && delay !== 0) {
 				let id = setInterval(tick, delay);
 				return () => clearInterval(id);
