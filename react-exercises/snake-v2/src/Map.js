@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const SnakeBoard = () => {
+const Map = () => {
 	const initialRows = init();
 	const initialSnake = [ { x: 0, y: 2 }, { x: 0, y: 1 }, { x: 0, y: 0 } ];
 	const initialDirection = 'right';
@@ -26,6 +26,9 @@ const SnakeBoard = () => {
 
 	const keyboardInput = ({ keyCode }) => {
 		switch (keyCode) {
+			case 32:
+				setGameRunning(true);
+				break;
 			case 37:
 				if (direction === 'right') {
 					break;
@@ -58,24 +61,6 @@ const SnakeBoard = () => {
 				break;
 		}
 	};
-	// const keyboardInput = ({ keyCode }) => {
-	// 	switch (keyCode) {
-	// 		// case 27: //esc
-	// 		// 	return gameReset();
-	// 		// case 32: //space
-	// 		// 	return setGameRunning(!gameRunning);
-	// 		case 37:
-	// 			return setDirection('left');
-	// 		case 38:
-	// 			return setDirection('up');
-	// 		case 39:
-	// 			return setDirection('right');
-	// 		case 40:
-	// 			return setDirection('down');
-	// 		default:
-	// 			break;
-	// 	}
-	// };
 
 	document.addEventListener('keydown', keyboardInput);
 
@@ -84,7 +69,6 @@ const SnakeBoard = () => {
 		snake.forEach(({ x, y }) => {
 			newRows[x][y] = 'snake';
 		});
-		// newRows[food.x][food.y] = 'food';
 		placeFood(newRows);
 		setRows(newRows);
 	};
@@ -158,7 +142,8 @@ const SnakeBoard = () => {
 		<div>
 			<h1>Snake!</h1>
 			<h2>Score: {score}</h2>
-			<div className="main-map">{displayRows}</div>
+			{/* <div className="main-map">{displayRows}</div> */}
+			<div className="main-map">{gameRunning ? displayRows : <h2>PRESS SPACE TO BEGIN</h2>}</div>
 			<button onClick={gameReset}>Reset</button>
 			<button onClick={playPause}>{gameRunning ? 'Pause' : 'Play'}</button>
 			<h3>Previous best: {bestScore ? `${bestScore}` : 0}</h3>
@@ -166,7 +151,7 @@ const SnakeBoard = () => {
 	);
 };
 
-export default SnakeBoard;
+export default Map;
 
 function getScoreFromLS(key) {
 	const storage = localStorage.getItem(key);

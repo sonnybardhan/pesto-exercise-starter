@@ -1,11 +1,11 @@
 import React from 'react';
 import './newItems/newApp.css';
-import SnakeBoard from './SnakeBoard.js';
+import Map from './Map.js';
 
 function App() {
 	return (
 		<div className="">
-			<SnakeBoard />
+			<Map />
 		</div>
 	);
 }

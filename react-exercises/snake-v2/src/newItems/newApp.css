@@ -1,3 +1,6 @@
+/* * {
+	box-sizing: border-box;
+} */
 body {
 	/* background: rgba(255, 233, 233, 0.521); */
 	height: 95vh;
@@ -9,14 +12,16 @@ body {
 .main-map {
 	/* background: rgba(233, 235, 255, 0.616); */
 	/* border: 8px solid rgb(197, 133, 133); */
-	border: 4px solid rgba(22, 22, 22, 0.644);
-	/* padding: 1px; */
+	/* border: 1px solid rgba(22, 22, 22, 0.644); */
+	/* padding: 5px; */
+	justify-content: center;
 	border-radius: 8px;
 	height: 640px;
 	width: 640px;
 	display: flex;
 	flex-wrap: wrap;
-	align-content: flex-start;
+	/* align-content: flex-start; */
+	align-items: center;
 }
 
 .grid-row {
@@ -27,9 +32,9 @@ body {
 .grid-block {
 	box-sizing: border-box;
 	display: inline-block;
-	/* background-color: rgba(214, 214, 214); */
+	background-color: rgb(233, 233, 233);
 	border-radius: 8px;
-	border: 2px solid rgba(105, 105, 105, 0.527);
+	border: 2px solid rgba(71, 70, 70, 0.527);
 	height: 40px;
 	width: 40px;
 }
