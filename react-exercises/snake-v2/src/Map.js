@@ -92,7 +92,7 @@ const Map = () => {
 	function onCrash() {
 		setStarted(false);
 		saveBestScore(setBestScore, score);
-		setMessage(score);
+		setMessage(`${score}`);
 		return gameReset();
 	}
 
@@ -117,7 +117,7 @@ const Map = () => {
 			</h2>
 			<div className="main-map">
 				{gameRunning ? (
-					printMap(rows)
+					rows
 				) : (
 					<div>
 						<h1 style={{ textAlign: 'center', fontWeight: 'bold' }}>
@@ -136,18 +136,6 @@ const Map = () => {
 };
 
 export default Map;
-
-const placeSnake = (initialMap, snake) => {
-	snake.forEach(({ x, y }) => {
-		initialMap[x][y] = 'snake';
-	});
-	return initialMap;
-};
-
-const placeFood = (initialMap, food) => {
-	initialMap[food.x][food.y] = 'food';
-	return initialMap;
-};
 
 function saveBestScore(setBestScore, score) {
 	setBestScore((prev) => (score > prev ? score : prev));
@@ -176,58 +164,22 @@ function saveScoreInLS(key, bestScore) {
 	localStorage.setItem(key, JSON.stringify({ score: bestScore }));
 }
 
-// const printMap = (rows) => {
-// 	return rows.map((row) => (
-// 		<div key={Math.random()} className="grid-row">
-// 			{row.map((e) => {
-// 				switch (e) {
-// 					case 'snake':
-// 						return <div className="snake-segment" key={Math.random()} />;
-// 					case 'food':
-// 						return <div className="food" key={Math.random()} />;
-// 					default:
-// 						break;
-// 				}
-// 			})}
-// 		</div>
-// 	));
-// };
-
-// const init = () => {
-// 	const initialMap = [];
-// 	for (let i = 0; i < 16; i++) {
-// 		initialMap[i] = [];
-// 		for (let j = 0; j < 16; j++) {
-// 			initialMap[i][j] = <div className="grid-block" key={Math.random()} />;
-// 		}
-// 	}
-// 	return initialMap;
-// };
-const printMap = (rows) => {
-	return rows.map((row) => (
-		<div key={Math.random()} className="grid-row">
-			{row.map((e) => {
-				switch (e) {
-					case 'blank':
-						return <div className="grid-block" key={Math.random()} />;
-					case 'snake':
-						return <div className="snake-segment" key={Math.random()} />;
-					case 'food':
-						return <div className="food" key={Math.random()} />;
-					default:
-						break;
-				}
-			})}
-		</div>
-	));
+const placeSnake = (grid, snake) => {
+	snake.forEach(({ x, y }) => {
+		grid[x][y] = <div className="snake-segment" key={Math.random()} />;
+	});
 };
 
-const init = (side = 16) => {
+const placeFood = (grid, food) => {
+	grid[food.x][food.y] = <div className="food" key={Math.random()} />;
+};
+
+const init = () => {
 	const initialMap = [];
-	for (let i = 0; i < side; i++) {
+	for (let i = 0; i < 16; i++) {
 		initialMap[i] = [];
-		for (let j = 0; j < side; j++) {
-			initialMap[i][j] = 'blank';
+		for (let j = 0; j < 16; j++) {
+			initialMap[i][j] = <div className="grid-block" key={Math.random()} />;
 		}
 	}
 	return initialMap;
