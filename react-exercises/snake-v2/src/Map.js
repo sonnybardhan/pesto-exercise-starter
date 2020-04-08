@@ -64,35 +64,30 @@ const Map = () => {
 		}
 	};
 
-	const placeSnake = () => {
-		snake.forEach(({ x, y }) => {
-			initialMap[x][y] = 'snake';
-		});
-	};
-
-	const placeFood = () => {
-		initialMap[food.x][food.y] = 'food';
-		return initialMap;
-	};
-
 	const moveSnake = () => {
 		const newHead = nextPosition(direction, snake);
 		const newSnake = [ newHead, ...snake ];
 
 		if (outOfBounds(newHead) || selfCollision(newHead, snake)) return onCrash();
 
-		if (newHead.x === food.x && newHead.y === food.y) {
-			setScore(score + 5);
-			setFood(randomPosition);
-			setTimeInterval(timeInterval - 2);
-		} else {
-			newSnake.pop();
-		}
-		setSnake(newSnake);
-		placeSnake();
-		placeFood();
-		setRows(initialMap);
+		if (newHead.x === food.x && newHead.y === food.y) onEat();
+		else newSnake.pop();
+
+		setUpFrame(newSnake);
 	};
+
+	function onEat() {
+		setScore(score + 5);
+		setFood(randomPosition);
+		setTimeInterval(timeInterval - 2);
+	}
+
+	function setUpFrame(newSnake) {
+		setSnake(newSnake);
+		placeSnake(initialMap, snake);
+		placeFood(initialMap, food);
+		setRows(initialMap);
+	}
 
 	function onCrash() {
 		setStarted(false);
@@ -100,8 +95,6 @@ const Map = () => {
 		setMessage(score);
 		return gameReset();
 	}
-
-	useInterval(moveSnake, timeInterval, gameRunning);
 
 	function gameReset() {
 		setScore(0);
@@ -114,6 +107,8 @@ const Map = () => {
 		setGameRunning(false);
 	}
 
+	useInterval(moveSnake, timeInterval, gameRunning);
+
 	return (
 		<div className="">
 			<h1 style={{ textAlign: 'center' }}>Snake!</h1>
@@ -125,7 +120,9 @@ const Map = () => {
 					printMap(rows)
 				) : (
 					<div>
-						<h1 style={{ textAlign: 'center', fontWeight: 'bold' }}>{message ? 'Game over!' : null}</h1>
+						<h1 style={{ textAlign: 'center', fontWeight: 'bold' }}>
+							{message && !started ? 'Game over!' : null}
+						</h1>
 						<h2 style={{ textAlign: 'center' }}>{message ? `You scored ${message}` : null}</h2>
 						<h2 style={{ textAlign: 'center' }}>PRESS SPACEBAR TO {started ? 'RESUME' : 'PLAY'}</h2>
 					</div>
@@ -139,6 +136,18 @@ const Map = () => {
 };
 
 export default Map;
+
+const placeSnake = (initialMap, snake) => {
+	snake.forEach(({ x, y }) => {
+		initialMap[x][y] = 'snake';
+	});
+	return initialMap;
+};
+
+const placeFood = (initialMap, food) => {
+	initialMap[food.x][food.y] = 'food';
+	return initialMap;
+};
 
 function saveBestScore(setBestScore, score) {
 	setBestScore((prev) => (score > prev ? score : prev));
