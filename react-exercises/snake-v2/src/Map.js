@@ -49,53 +49,37 @@ const Map = () => {
 				});
 			case 37: //left
 				if (direction !== 'right') return setDirection('left');
+				break;
 			case 38: //up
 				if (direction !== 'down') return setDirection('up');
+				break;
 			case 39: //right
 				if (direction !== 'left') return setDirection('right');
+				break;
 			case 40: //down
 				if (direction !== 'up') return setDirection('down');
+				break;
 			default:
 				break;
 		}
 	};
 
-	// const placeSnake = () => {
-	// 	snake.forEach(({ x, y }) => {
-	// 		// initialMap[x][y] = 'snake';
-	// 		initialMap[x][y] = <div className="snake-segment" key={Math.random()} />;
-	// 	});
-	// 	placeFood(initialMap);
-	// 	setRows(initialMap);
-	// };
-
-	// const placeFood = (initialMap) => {
-	// 	// initialMap[food.x][food.y] = 'food';
-	// 	initialMap[food.x][food.y] = <div className="food" key={Math.random()} />;
-	// 	return initialMap;
-	// };
-
 	const placeSnake = () => {
-		const newRows = initialMap;
 		snake.forEach(({ x, y }) => {
-			newRows[x][y] = 'snake';
+			initialMap[x][y] = 'snake';
 		});
-		placeFood(newRows);
-		setRows(newRows);
 	};
 
-	const placeFood = (newRows) => {
-		newRows[food.x][food.y] = 'food';
-		return newRows;
+	const placeFood = () => {
+		initialMap[food.x][food.y] = 'food';
+		return initialMap;
 	};
 
 	const moveSnake = () => {
 		const newHead = nextPosition(direction, snake);
 		const newSnake = [ newHead, ...snake ];
 
-		if (outOfBounds(newHead)) return onCrash();
-
-		if (selfCollision(newHead, snake)) return onCrash();
+		if (outOfBounds(newHead) || selfCollision(newHead, snake)) return onCrash();
 
 		if (newHead.x === food.x && newHead.y === food.y) {
 			setScore(score + 5);
@@ -106,6 +90,8 @@ const Map = () => {
 		}
 		setSnake(newSnake);
 		placeSnake();
+		placeFood();
+		setRows(initialMap);
 	};
 
 	function onCrash() {
