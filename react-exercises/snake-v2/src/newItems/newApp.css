@@ -7,6 +7,7 @@ body {
 	justify-content: center;
 	display: flex;
 	align-items: center;
+	font-family: 'Poppins', sans-serif;
 }
 
 .main-map {

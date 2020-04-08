@@ -122,7 +122,7 @@ const Map = () => {
 	}
 	useInterval(moveSnake, timeInterval, gameRunning);
 
-	const displayRows = printMap(rows);
+	const displayMap = printMap(rows);
 
 	function gameReset() {
 		setScore(0);
@@ -139,14 +139,15 @@ const Map = () => {
 	}
 
 	return (
-		<div>
-			<h1>Snake!</h1>
-			<h2>Score: {score}</h2>
-			{/* <div className="main-map">{displayRows}</div> */}
-			<div className="main-map">{gameRunning ? displayRows : <h2>PRESS SPACE TO BEGIN</h2>}</div>
-			<button onClick={gameReset}>Reset</button>
-			<button onClick={playPause}>{gameRunning ? 'Pause' : 'Play'}</button>
-			<h3>Previous best: {bestScore ? `${bestScore}` : 0}</h3>
+		<div className="">
+			<h1 style={{ textAlign: 'center' }}>Snake!</h1>
+			<h2>
+				<span>Score: {score}</span>
+			</h2>
+			<div className="main-map">{gameRunning ? displayMap : <h2>PRESS SPACEBAR TO BEGIN</h2>}</div>
+			<h2 style={{ textAlign: 'right' }}>
+				<span>Best: {bestScore ? `${bestScore}` : 0}</span>
+			</h2>
 		</div>
 	);
 };
