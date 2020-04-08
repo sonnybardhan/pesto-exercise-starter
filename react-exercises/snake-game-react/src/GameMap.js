@@ -57,7 +57,7 @@ export default function() {
 
 	function useInterval(callback, delay) {
 		const savedCallback = useRef();
-		// Remember the latest callback.
+		// Remember the latest callback
 		useEffect(
 			() => {
 				savedCallback.current = callback;
