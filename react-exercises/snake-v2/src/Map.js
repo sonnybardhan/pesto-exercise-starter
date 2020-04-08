@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 const Map = () => {
-	const initialRows = init();
+	const initialMap = init();
 	const initialSnake = [ { x: 3, y: 3 }, { x: 3, y: 2 }, { x: 3, y: 1 } ];
 	const initialDirection = 'right';
 	const key = 'snakeGame';
 
 	const [ score, setScore ] = useState(0);
-	const [ rows, setRows ] = useState(initialRows);
+	const [ rows, setRows ] = useState(initialMap);
 	const [ snake, setSnake ] = useState(initialSnake);
 	const [ direction, setDirection ] = useState(initialDirection);
 	const [ food, setFood ] = useState(randomPosition);
@@ -36,31 +36,47 @@ const Map = () => {
 		[ direction ]
 	);
 
-	// const keyboardInput = ({ keyCode }, setGameRunning, setDirection) => {
 	const keyboardInput = ({ keyCode }) => {
 		switch (keyCode) {
-			case 32:
+			case 27: //escape
+				return gameReset();
+			case 32: //space
 				return setGameRunning((prevState) => {
 					if (!started) {
 						setStarted(true);
 					}
 					return !prevState;
 				});
-			case 37:
+			case 37: //left
 				if (direction !== 'right') return setDirection('left');
-			case 38:
+			case 38: //up
 				if (direction !== 'down') return setDirection('up');
-			case 39:
+			case 39: //right
 				if (direction !== 'left') return setDirection('right');
-			case 40:
+			case 40: //down
 				if (direction !== 'up') return setDirection('down');
 			default:
 				break;
 		}
 	};
 
+	// const placeSnake = () => {
+	// 	snake.forEach(({ x, y }) => {
+	// 		// initialMap[x][y] = 'snake';
+	// 		initialMap[x][y] = <div className="snake-segment" key={Math.random()} />;
+	// 	});
+	// 	placeFood(initialMap);
+	// 	setRows(initialMap);
+	// };
+
+	// const placeFood = (initialMap) => {
+	// 	// initialMap[food.x][food.y] = 'food';
+	// 	initialMap[food.x][food.y] = <div className="food" key={Math.random()} />;
+	// 	return initialMap;
+	// };
+
 	const placeSnake = () => {
-		const newRows = initialRows;
+		const newRows = initialMap;
 		snake.forEach(({ x, y }) => {
 			newRows[x][y] = 'snake';
 		});
@@ -77,21 +93,9 @@ const Map = () => {
 		const newHead = nextPosition(direction, snake);
 		const newSnake = [ newHead, ...snake ];
 
-		if (outOfBounds(newHead)) {
-			console.log('Out of bounds');
-			setStarted(false);
-			saveBestScore();
-			setMessage(score);
-			return gameReset();
-		}
+		if (outOfBounds(newHead)) return onCrash();
 
-		if (selfCollision(newHead)) {
-			console.log('Self collision!');
-			setStarted(false);
-			setMessage(score);
-			saveBestScore();
-			return gameReset();
-		}
+		if (selfCollision(newHead, snake)) return onCrash();
 
 		if (newHead.x === food.x && newHead.y === food.y) {
 			setScore(score + 5);
@@ -104,24 +108,14 @@ const Map = () => {
 		placeSnake();
 	};
 
-	function outOfBounds({ x, y }) {
-		return x < 0 || x > 15 || y < 0 || y > 15;
+	function onCrash() {
+		setStarted(false);
+		saveBestScore(setBestScore, score);
+		setMessage(score);
+		return gameReset();
 	}
 
-	function selfCollision({ x, y }) {
-		for (let segment of snake) {
-			if (segment.x === x && segment.y === y) {
-				return true;
-			}
-		}
-		return false;
-	}
-	function saveBestScore() {
-		setBestScore((prev) => (score > prev ? score : prev));
-	}
 	useInterval(moveSnake, timeInterval, gameRunning);
-
-	const displayMap = printMap(rows);
 
 	function gameReset() {
 		setScore(0);
@@ -129,6 +123,7 @@ const Map = () => {
 		setSnake(initialSnake);
 		setDirection('right');
 		setFood(randomPosition);
+		setStarted(false);
 		setTimeInterval(150);
 		setGameRunning(false);
 	}
@@ -141,7 +136,7 @@ const Map = () => {
 			</h2>
 			<div className="main-map">
 				{gameRunning ? (
-					displayMap
+					printMap(rows)
 				) : (
 					<div>
 						<h1 style={{ textAlign: 'center', fontWeight: 'bold' }}>{message ? 'Game over!' : null}</h1>
@@ -159,6 +154,23 @@ const Map = () => {
 
 export default Map;
 
+function saveBestScore(setBestScore, score) {
+	setBestScore((prev) => (score > prev ? score : prev));
+}
+
+function outOfBounds({ x, y }) {
+	return x < 0 || x > 15 || y < 0 || y > 15;
+}
+
+function selfCollision({ x, y }, snake) {
+	for (let segment of snake) {
+		if (segment.x === x && segment.y === y) {
+			return true;
+		}
+	}
+	return false;
+}
+
 function getScoreFromLS(key) {
 	const storage = localStorage.getItem(key);
 	if (storage) return JSON.parse(storage).score;
@@ -169,6 +181,33 @@ function saveScoreInLS(key, bestScore) {
 	localStorage.setItem(key, JSON.stringify({ score: bestScore }));
 }
 
+// const printMap = (rows) => {
+// 	return rows.map((row) => (
+// 		<div key={Math.random()} className="grid-row">
+// 			{row.map((e) => {
+// 				switch (e) {
+// 					case 'snake':
+// 						return <div className="snake-segment" key={Math.random()} />;
+// 					case 'food':
+// 						return <div className="food" key={Math.random()} />;
+// 					default:
+// 						break;
+// 				}
+// 			})}
+// 		</div>
+// 	));
+// };
+
+// const init = () => {
+// 	const initialMap = [];
+// 	for (let i = 0; i < 16; i++) {
+// 		initialMap[i] = [];
+// 		for (let j = 0; j < 16; j++) {
+// 			initialMap[i][j] = <div className="grid-block" key={Math.random()} />;
+// 		}
+// 	}
+// 	return initialMap;
+// };
 const printMap = (rows) => {
 	return rows.map((row) => (
 		<div key={Math.random()} className="grid-row">
@@ -189,14 +228,14 @@ const printMap = (rows) => {
 };
 
 const init = (side = 16) => {
-	const initialRows = [];
+	const initialMap = [];
 	for (let i = 0; i < side; i++) {
-		initialRows[i] = [];
+		initialMap[i] = [];
 		for (let j = 0; j < side; j++) {
-			initialRows[i][j] = 'blank';
+			initialMap[i][j] = 'blank';
 		}
 	}
-	return initialRows;
+	return initialMap;
 };
 
 const randomPosition = () => {
