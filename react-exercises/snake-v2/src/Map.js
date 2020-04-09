@@ -1,13 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Monitoring from './monitoring/Monitoring';
-import LocalStorage from './localStorage/LocalStorage';
-import MapSetup from './mapSetup/MapSetup';
-import Animation from './animation/Animation';
+import Utilities from './utilities/Utilities';
 
-const { saveBestScore, outOfBounds, selfCollision } = Monitoring();
-const { getScoreFromLS, saveScoreInLS } = LocalStorage();
-const { placeSnake, placeFood, init, randomPosition, nextPosition } = MapSetup();
-const { useAnimation } = Animation();
+const {
+	saveBestScore,
+	outOfBounds,
+	selfCollision,
+	getScoreFromLS,
+	saveScoreInLS,
+	placeSnake,
+	placeFood,
+	init,
+	randomPosition,
+	nextPosition,
+	useAnimation
+} = Utilities();
 
 const Map = () => {
 	const initialMap = init();
