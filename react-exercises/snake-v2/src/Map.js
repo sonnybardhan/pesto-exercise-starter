@@ -5,17 +5,19 @@ const Map = () => {
 	const initialSnake = [ { x: 3, y: 3 }, { x: 3, y: 2 }, { x: 3, y: 1 } ];
 	const initialDirection = 'right';
 	const key = 'snakeGame';
+	const initialFps = 7;
 
 	const [ score, setScore ] = useState(0);
 	const [ rows, setRows ] = useState(initialMap);
 	const [ snake, setSnake ] = useState(initialSnake);
 	const [ direction, setDirection ] = useState(initialDirection);
 	const [ food, setFood ] = useState(randomPosition);
-	const [ timeInterval, setTimeInterval ] = useState(150);
+	const [ fps, setFps ] = useState(initialFps);
 	const [ gameRunning, setGameRunning ] = useState(false);
 	const [ bestScore, setBestScore ] = useState(getScoreFromLS(key));
 	const [ message, setMessage ] = useState('');
 	const [ started, setStarted ] = useState(false);
+	// const [timeNow, setTimeNow] = useState(0);
 
 	useEffect(
 		() => {
@@ -36,7 +38,7 @@ const Map = () => {
 		[ direction ]
 	);
 
-	const keyboardInput = ({ keyCode }) => {
+	function keyboardInput({ keyCode }) {
 		switch (keyCode) {
 			case 27: //escape
 				return gameReset();
@@ -62,7 +64,7 @@ const Map = () => {
 			default:
 				break;
 		}
-	};
+	}
 
 	const moveSnake = () => {
 		const newHead = nextPosition(direction, snake);
@@ -77,9 +79,10 @@ const Map = () => {
 	};
 
 	function onEat() {
+		console.log('fps: ', fps);
 		setScore(score + 5);
 		setFood(randomPosition);
-		setTimeInterval(timeInterval - 2);
+		setFps((prevFps) => (score % 25 === 0 ? prevFps + 0.5 : prevFps));
 	}
 
 	function setUpFrame(newSnake) {
@@ -103,11 +106,11 @@ const Map = () => {
 		setDirection('right');
 		setFood(randomPosition);
 		setStarted(false);
-		setTimeInterval(150);
+		setFps(initialFps);
 		setGameRunning(false);
 	}
 
-	useInterval(moveSnake, timeInterval, gameRunning);
+	useAnimation(moveSnake, fps, gameRunning);
 
 	return (
 		<div className="">
@@ -213,28 +216,37 @@ function nextPosition(direction, snake) {
 	return newHead;
 }
 
-function useInterval(callback, delay, gameRunning) {
-	const savedCallback = useRef();
+function useAnimation(cb, fps, isPlaying) {
+	const cbRef = useRef();
+	const animationFrameId = useRef();
+	const then = useRef(window.performance.now());
+	const now = useRef();
+	const elapsed = useRef();
+	const fpsInterval = useRef(1000 / fps);
 	useEffect(
 		() => {
-			savedCallback.current = callback;
+			cbRef.current = cb;
 		},
-		[ callback ]
+		[ cb ]
 	);
-
 	useEffect(
 		() => {
-			function tick() {
-				savedCallback.current();
+			function loop() {
+				animationFrameId.current = window.requestAnimationFrame(loop);
+				now.current = window.performance.now();
+				elapsed.current = now.current - then.current;
+				if (elapsed.current > fpsInterval.current) {
+					then.current = now.current - elapsed.current % fpsInterval.current;
+					cbRef.current();
+				}
 			}
-
-			if (delay !== null && gameRunning && delay !== 0) {
-				let id = setInterval(tick, delay);
-				return () => clearInterval(id);
-			} else {
-				console.log('game paused');
+			if (isPlaying) {
+				animationFrameId.current = window.requestAnimationFrame(loop);
+				return () => {
+					window.cancelAnimationFrame(animationFrameId.current);
+				};
 			}
 		},
-		[ delay, gameRunning ]
+		[ isPlaying ]
 	);
 }
