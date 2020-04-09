@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Utilities from './utilities/Utilities';
 
 const {
@@ -127,7 +127,7 @@ const Map = () => {
 		<div className="">
 			<h1 style={{ textAlign: 'center' }}>Snake!</h1>
 			<h2>
-				<span>Score: {score}</span>
+				<span>{gameRunning ? `Score: ${score}` : null}</span>
 			</h2>
 			<div className="main-map">
 				{gameRunning ? (
