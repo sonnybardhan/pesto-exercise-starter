@@ -1,4 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Monitoring from './monitoring/Monitoring';
+import LocalStorage from './localStorage/LocalStorage';
+import MapSetup from './mapSetup/MapSetup';
+import Animation from './animation/Animation';
+
+const { saveBestScore, outOfBounds, selfCollision } = Monitoring();
+const { getScoreFromLS, saveScoreInLS } = LocalStorage();
+const { placeSnake, placeFood, init, randomPosition, nextPosition } = MapSetup();
+const { useAnimation } = Animation();
 
 const Map = () => {
 	const initialMap = init();
@@ -77,7 +86,7 @@ const Map = () => {
 	function onEat() {
 		setScore(score + 5);
 		setFood(randomPosition);
-		setFps((prevFps) => (score % 10 === 0 ? prevFps + 0.5 : prevFps));
+		setFps((prevFps) => (score % 10 === 0 ? prevFps + 1 : prevFps));
 	}
 
 	function setUpFrame(newSnake) {
@@ -137,114 +146,3 @@ const Map = () => {
 };
 
 export default Map;
-
-function saveBestScore(setBestScore, score) {
-	setBestScore((prev) => (score > prev ? score : prev));
-}
-
-function outOfBounds({ x, y }) {
-	return x < 0 || x > 15 || y < 0 || y > 15;
-}
-
-function selfCollision({ x, y }, snake) {
-	for (let segment of snake) {
-		if (segment.x === x && segment.y === y) {
-			return true;
-		}
-	}
-	return false;
-}
-
-function getScoreFromLS(key) {
-	const storage = localStorage.getItem(key);
-	if (storage) return JSON.parse(storage).score;
-	return 0;
-}
-
-function saveScoreInLS(key, bestScore) {
-	localStorage.setItem(key, JSON.stringify({ score: bestScore }));
-}
-
-const placeSnake = (grid, snake) => {
-	snake.forEach(({ x, y }) => {
-		grid[x][y] = <div className="snake-segment" key={Math.random()} />;
-	});
-};
-
-const placeFood = (grid, food) => {
-	grid[food.x][food.y] = <div className="food" key={Math.random()} />;
-};
-
-const init = () => {
-	const initialMap = [];
-	for (let i = 0; i < 16; i++) {
-		initialMap[i] = [];
-		for (let j = 0; j < 16; j++) {
-			initialMap[i][j] = <div className="grid-block" key={Math.random()} />;
-		}
-	}
-	return initialMap;
-};
-
-const randomPosition = () => {
-	return {
-		x: Math.floor(Math.random() * 16),
-		y: Math.floor(Math.random() * 16)
-	};
-};
-
-function nextPosition(direction, snake) {
-	const newHead = { ...snake[0] };
-	switch (direction) {
-		case 'right':
-			newHead.y += 1;
-			break;
-		case 'left':
-			newHead.y -= 1;
-			break;
-		case 'up':
-			newHead.x -= 1;
-			break;
-		case 'down':
-			newHead.x += 1;
-			break;
-		default:
-			break;
-	}
-	return newHead;
-}
-
-function useAnimation(cb, fps, isPlaying) {
-	const cbRef = useRef();
-	const animationFrameId = useRef();
-	const then = useRef(window.performance.now());
-	const now = useRef();
-	const elapsed = useRef();
-	const fpsInterval = useRef(1000 / fps);
-	useEffect(
-		() => {
-			cbRef.current = cb;
-		},
-		[ cb ]
-	);
-	useEffect(
-		() => {
-			function loop() {
-				animationFrameId.current = window.requestAnimationFrame(loop);
-				now.current = window.performance.now();
-				elapsed.current = now.current - then.current;
-				if (elapsed.current > fpsInterval.current) {
-					then.current = now.current - elapsed.current % fpsInterval.current;
-					cbRef.current();
-				}
-			}
-			if (isPlaying) {
-				animationFrameId.current = window.requestAnimationFrame(loop);
-				return () => {
-					window.cancelAnimationFrame(animationFrameId.current);
-				};
-			}
-		},
-		[ isPlaying ]
-	);
-}

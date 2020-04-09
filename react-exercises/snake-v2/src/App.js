@@ -1,5 +1,5 @@
 import React from 'react';
-import './newItems/newApp.css';
+import './styles/newApp.css';
 import Map from './Map.js';
 
 function App() {
