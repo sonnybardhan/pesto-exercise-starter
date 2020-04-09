@@ -6,7 +6,6 @@ const Map = () => {
 	const initialDirection = 'right';
 	const key = 'snakeGame';
 	const initialFps = 7;
-
 	const [ score, setScore ] = useState(0);
 	const [ rows, setRows ] = useState(initialMap);
 	const [ snake, setSnake ] = useState(initialSnake);
@@ -17,7 +16,6 @@ const Map = () => {
 	const [ bestScore, setBestScore ] = useState(getScoreFromLS(key));
 	const [ message, setMessage ] = useState('');
 	const [ started, setStarted ] = useState(false);
-	// const [timeNow, setTimeNow] = useState(0);
 
 	useEffect(
 		() => {
@@ -46,6 +44,7 @@ const Map = () => {
 				return setGameRunning((prevState) => {
 					if (!started) {
 						setStarted(true);
+						setDirection('right');
 					}
 					return !prevState;
 				});
@@ -66,23 +65,19 @@ const Map = () => {
 		}
 	}
 
-	const moveSnake = () => {
+	const repositionSnake = () => {
 		const newHead = nextPosition(direction, snake);
 		const newSnake = [ newHead, ...snake ];
-
 		if (outOfBounds(newHead) || selfCollision(newHead, snake)) return onCrash();
-
 		if (newHead.x === food.x && newHead.y === food.y) onEat();
 		else newSnake.pop();
-
 		setUpFrame(newSnake);
 	};
 
 	function onEat() {
-		console.log('fps: ', fps);
 		setScore(score + 5);
 		setFood(randomPosition);
-		setFps((prevFps) => (score % 25 === 0 ? prevFps + 0.5 : prevFps));
+		setFps((prevFps) => (score % 10 === 0 ? prevFps + 0.5 : prevFps));
 	}
 
 	function setUpFrame(newSnake) {
@@ -95,11 +90,12 @@ const Map = () => {
 	function onCrash() {
 		setStarted(false);
 		saveBestScore(setBestScore, score);
-		setMessage(`${score}`);
+		setMessage(score);
 		return gameReset();
 	}
 
 	function gameReset() {
+		setMessage(score);
 		setScore(0);
 		setRows(init);
 		setSnake(initialSnake);
@@ -110,7 +106,7 @@ const Map = () => {
 		setGameRunning(false);
 	}
 
-	useAnimation(moveSnake, fps, gameRunning);
+	useAnimation(repositionSnake, fps, gameRunning);
 
 	return (
 		<div className="">
@@ -126,7 +122,9 @@ const Map = () => {
 						<h1 style={{ textAlign: 'center', fontWeight: 'bold' }}>
 							{message && !started ? 'Game over!' : null}
 						</h1>
-						<h2 style={{ textAlign: 'center' }}>{message ? `You scored ${message}` : null}</h2>
+						<h2 style={{ textAlign: 'center' }}>
+							{message && !started ? `You scored ${0 || message}` : null}
+						</h2>
 						<h2 style={{ textAlign: 'center' }}>PRESS SPACEBAR TO {started ? 'RESUME' : 'PLAY'}</h2>
 					</div>
 				)}
