@@ -98,14 +98,14 @@ const Map = () => {
 		}
 	}
 
-	const repositionSnake = () => {
+	function repositionSnake() {
 		const newHead = nextPosition(direction, snake);
 		const newSnake = [ newHead, ...snake ];
 		if (outOfBounds(newHead) || selfCollision(newHead, snake)) return onCrash();
 		if (newHead.x === food.x && newHead.y === food.y) onEat();
 		else newSnake.pop();
 		setUpFrame(newSnake);
-	};
+	}
 
 	function onEat() {
 		setScore(score + 5);
