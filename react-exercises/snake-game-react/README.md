@@ -2,7 +2,7 @@
 
 # Submission
 
-Game URL: https://cranky-franklin-d5fab3.netlify.com/
+Game URL: https://elegant-lovelace-45bdd2.netlify.com/
 
 Mockup URL: https://drive.google.com/file/d/1CTq1lX3mpT7Hrvr-6uatCXmmmkutL4qn/view?usp=sharing
 
